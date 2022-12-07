@@ -12,6 +12,16 @@ object Day5 {
     )
   }
 
+  def runSim(moves: List[Move], initialState: Map[Int, List[Char]], flip: Boolean) = {
+    moves
+      .foldLeft(initialState) {
+        case (state, move) => reindexTail(state, move.fromIndex, move.toIndex, move.amount, flip)
+      }
+      .toList.sortBy(_._1).flatMap(_._2.takeRight(1)).mkString
+  }
+
+  case class Move(fromIndex: Int, toIndex: Int, amount: Int)
+
   def solve(inputString: String) = {
     val allLines = inputString.split("\n").toList
     // Always assuming there's a blank line
@@ -34,26 +44,12 @@ object Day5 {
 
     val moveRegex = """^move (\d*) from (\d) to (\d)$""".r
     val moves = moveSetWithNL.tail.map {
-      case moveRegex(amt, from, to) => (amt.toInt, from.toInt, to.toInt)
+      case moveRegex(amt, from, to) => Move(from.toInt, to.toInt, amt.toInt)
     }
 
-    val p1 = moves
-      .foldLeft(initialState) {
-        case (state, (amt, from, to)) => reindexTail(state, from, to, amt, true)
-      }
-      .toList.sortBy(_._1).flatMap(_._2.takeRight(1)).mkString
+    val p1 = runSim(moves, initialState, true)
+    val p2 = runSim(moves, initialState, false)
 
-    val p2 = moves
-      .foldLeft(initialState) {
-        case (state, (amt, from, to)) => reindexTail(state, from, to, amt, false)
-      }
-      .toList.sortBy(_._1).flatMap(_._2.takeRight(1)).mkString
-
-
-
-
-
-    println(p1)
-    println(p2)
+    (p1, p2)
   }
 }

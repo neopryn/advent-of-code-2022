@@ -32,4 +32,10 @@ class answers extends AnyFunSuite {
 
     println(Day5.solve(input))
   }
+
+  test("6") {
+    val input = Source.fromResource("6").mkString
+
+    println(Day6.solve(input))
+  }
 }
